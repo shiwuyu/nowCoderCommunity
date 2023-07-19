@@ -5,7 +5,7 @@ import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.util.CommunityUtil;
-import com.nowcoder.community.util.CommuntiyConstant;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.MailClient;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ import java.util.Random;
  * @create: 2022-09-27 16:56
  */
 @Service
-public class UserService implements CommuntiyConstant {
+public class UserService implements CommunityConstant {
 
     @Autowired
     private UserMapper userMapper;

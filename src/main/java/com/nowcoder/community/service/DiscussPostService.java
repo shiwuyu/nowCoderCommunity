@@ -33,7 +33,7 @@ public class DiscussPostService {
         return discussPostMapper.selectDiscussPostRows(userId);
     }
 
-    public int addDiscussPosts(DiscussPost post) {
+    public int addDiscussPost(DiscussPost post) {
         if (post == null) {
             throw new IllegalArgumentException("参数不能为空!");
         }
@@ -48,7 +48,7 @@ public class DiscussPostService {
         return discussPostMapper.insertDiscussPost(post);
     }
 
-    public DiscussPost findDiscussPostsById(int id) {
+    public DiscussPost findDiscussPostById(int id) {
         return discussPostMapper.selectDiscussPostById(id);
     }
 }

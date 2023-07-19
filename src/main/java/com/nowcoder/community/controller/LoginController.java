@@ -3,7 +3,7 @@ package com.nowcoder.community.controller;
 import com.google.code.kaptcha.Producer;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.service.UserService;
-import com.nowcoder.community.util.CommuntiyConstant;
+import com.nowcoder.community.util.CommunityConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ import java.util.Map;
  * @Create: 2023-03-29 15:40
  **/
 @Controller
-public class LoginController implements CommuntiyConstant {
+public class LoginController implements CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
