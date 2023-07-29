@@ -9,10 +9,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.jws.soap.SOAPBinding;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +30,7 @@ public class MapperTests {
     private UserMapper userMapper;
 
     @Autowired
-    private DiscussPostMapper discussPostMapper;
+    private DiscussPostMapper DiscussPostMapper;
 
     @Test
     public void testSelectUser() {
@@ -87,13 +85,13 @@ public class MapperTests {
 
     @Test
     public void testSelectPosts() {
-        List<DiscussPost> discussPosts = discussPostMapper.selectDiscussPosts(0,0,10);
+        List<DiscussPost> discussPosts = DiscussPostMapper.selectDiscussPosts(0,0,10);
         for (DiscussPost discuss :
                 discussPosts) {
             System.out.println(discuss);
         }
 
-        int rows = discussPostMapper.selectDiscussPostRows(0);
+        int rows = DiscussPostMapper.selectDiscussPostRows(0);
         System.out.println(rows);
     }
 

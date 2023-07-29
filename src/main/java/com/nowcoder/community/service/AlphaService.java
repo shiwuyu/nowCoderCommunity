@@ -18,7 +18,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.beans.Transient;
 import java.util.Date;
 
 /**
