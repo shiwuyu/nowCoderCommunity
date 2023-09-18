@@ -35,7 +35,6 @@ public class MessageController {
     @Autowired
     private UserService userService;
 
-    // 私信列表
     @RequestMapping(path = "/letter/list", method = RequestMethod.GET)
     public String getLetterList(Model model, Page page) {
         User user = hostHolder.getUser();
