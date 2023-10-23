@@ -1,5 +1,7 @@
 package com.nowcoder.community.service;
 
+import com.nowcoder.community.entity.User;
+import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -8,18 +10,31 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+
 /**
- * @Program: community
- * @Description: 关注服务类
- * @Author: 张非凡
- * @Create: 2023-10-15 16:07
+ * @program community
+ * @description 关注服务类
+ * @author 张非凡
+ * @date 2023-10-15 16:07
  */
 @Service
-public class FollowService {
+public class FollowService implements CommunityConstant {
 
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private UserService userService;
+
+    /**
+     * 关注方法
+     *
+     * @param userId
+     * @param entityType
+     * @param entityId
+     * @return void
+     */
     public void follow(int userId, int entityType, int entityId) {
         redisTemplate.execute(new SessionCallback() {
             @Override
@@ -37,9 +52,12 @@ public class FollowService {
         });
     }
     /**
-     * @description: 和follow剛好相反,remove()方法刪去
-     * @param: [userId, entityType, entityId]
-     * @return: void
+     * 和follow剛好相反,remove()方法刪去
+     *
+     * @param userId
+     * @param entityType
+     * @param entityId
+     * @return void
      */
     public void unfollow(int userId, int entityType, int entityId) {
         redisTemplate.execute(new SessionCallback() {
@@ -58,22 +76,94 @@ public class FollowService {
         });
     }
 
-    // 查询关注的实体的数量
+    /**
+     * 查询关注的实体的数量
+     *
+     * @param userId
+     * @param entityType
+     * @return long
+     */
     public long findFolloweeCount(int userId, int entityType) {
         String followeeKey = RedisKeyUtil.getFolloweeKey(userId, entityType);
         return redisTemplate.opsForZSet().zCard(followeeKey);
     }
 
-    // 查询实体的粉丝的数量
+    /**
+     * 查询实体的粉丝的数量
+     *
+     * @param entityType
+     * @param entityId
+     * @return long
+     */
     public long findFollowerCount(int entityType, int entityId) {
         String followerKey = RedisKeyUtil.getFollowerKey(entityType, entityId);
         return redisTemplate.opsForZSet().zCard(followerKey);
     }
 
-    // 查询当前用户是否已关注该实体
+    /**
+     * 查询当前用户是否已关注该实体
+     *
+     * @param userId
+     * @param entityType
+     * @param entityId
+     * @return boolean
+     */
     public boolean hasFollowed(int userId, int entityType, int entityId) {
         String followeeKey = RedisKeyUtil.getFolloweeKey(userId, entityType);
         return redisTemplate.opsForZSet().score(followeeKey, entityId) != null;
     }
 
+    /**
+     * 查询某用户关注的人
+     *
+     * @param userId
+     * @param offset
+     * @param limit
+     * @return java.util.List<java.util.Map < java.lang.String, java.lang.Object>>
+     */
+    public List<Map<String, Object>> findFollowees(int userId, int offset, int limit) {
+        String followeeKey = RedisKeyUtil.getFolloweeKey(userId, ENTITY_TYPE_USER);
+        Set<Integer> targetIds = redisTemplate.opsForZSet().reverseRange(followeeKey, offset, limit);
+
+        if (targetIds == null) {
+            return null;
+        }
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Integer targetId : targetIds) {
+            Map<String, Object> map = new HashMap<>();
+            User user = userService.findUserById(targetId);
+            map.put("user" , user);
+            Double score = redisTemplate.opsForZSet().score(followeeKey, targetId);
+            map.put("followTime",new Date(score.longValue()));
+            list.add(map);
+        }
+        return list;
+    }
+
+    /**
+     * 查找某用户的所有关注着
+     *
+     * @param userId
+     * @param offset
+     * @param limit
+     * @return java.util.List<java.util.Map < java.lang.String, java.lang.Integer>>
+     */
+    public List<Map<String, Object>> findFollowers(int userId, int offset, int limit) {
+        String followerKey = RedisKeyUtil.getFollowerKey(ENTITY_TYPE_USER, userId);
+        Set<Integer> targetIds = redisTemplate.opsForZSet().reverseRange(followerKey, offset, limit);
+
+        if (targetIds == null) {
+            return null;
+        }
+        List<Map<String, Object>> list = new ArrayList<>();
+        for (Integer targetId : targetIds) {
+            User user = userService.findUserById(targetId);
+            Map<String, Object> map = new HashMap<>();
+            map.put("user", user);
+            Double score = redisTemplate.opsForZSet().score(followerKey, targetId);
+            map.put("followTime", new Date(score.longValue()));
+            list.add(map);
+        }
+        return list;
+    }
 }
